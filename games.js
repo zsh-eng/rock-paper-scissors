@@ -1,65 +1,70 @@
-function computerPlay() {
-	let options = ["Rock", "Paper", "Scissors"];
-	let selection = Math.floor(Math.random() * 3);
-	return options[selection];
-}
-
-function playRound(playerSelection, computerSelection) {
-	function checkWin() {
-		let result =
-			(playerSelection == "rock" && computerSelection == "scissors") ||
-			(playerSelection == "scissors" && computerSelection == "paper") ||
-			(playerSelection == "papers" && computerSelection == "rock");
-
-		return result;
-	}
-
-	playerSelection = playerSelection.toLowerCase();
-	computerSelection = computerSelection.toLowerCase();
-
-	if (playerSelection == computerSelection) {
-		return "T";
-	} else if (checkWin()) {
-		return "W";
-	} else {
-		return "L";
-	}
-}
-
 function game() {
-	function gameResult() {
-		if (playerScore > computerScore) {
-			return "Congrats! You win!";
-		} else if (playerScore < computerScore) {
-			return "You lose! Better luck next time!";
+	function resetGameIfEnd() {
+		if (scores.computerScore >= 5 || scores.playerScore >= 5) {
+			scores.computerScore = 0
+			scores.playerScore = 0
+		}
+	}
+	function generateComputerSelection() {
+		let options = ["Rock", "Paper", "Scissors"]
+		let selection = Math.floor(Math.random() * 3)
+		return options[selection]
+	}
+	function getResult() {
+		const isTie = playerSelection === computerSelection
+		const isWin =
+			(playerSelection === "Rock" && computerSelection === "Scissors") ||
+			(playerSelection === "Scissors" && computerSelection === "Paper") ||
+			(playerSelection === "Papers" && computerSelection === "Rock")
+
+		const result = isTie ? "T" : isWin ? "W" : "L"
+		return result
+	}
+	function displayResult() {
+		resultsDiv.textContent += result
+	}
+	function updateScore() {
+		if (result === 'W') {
+			scores.playerScore += 1
+		} else if (result === 'L') {
+			scores.computerScore += 1
+		}
+	}
+	function displayScore() {
+		scoreDiv.textContent = `Score: ${scores.playerScore}-${scores.computerScore}`
+	}
+	function displayMessage() {
+		if (scores.playerScore === 5) {
+			messageDiv.textContent = "You Win!"
+		} else if (scores.computerScore === 5) {
+			messageDiv.textContent = "You Lose! Better luck next time!"
 		} else {
-			return "It's a tie!";
+			messageDiv.textContent = ""
 		}
 	}
 
-	let playerScore = 0;
-	let computerScore = 0;
-
-	for (i = 0; i < 5; i++) {
-		let playerSelection = prompt("What are you going to play?");
-		playerSelection =
-			playerSelection.charAt(0).toUpperCase() +
-			playerSelection.slice(1).toLowerCase();
-		let computerSelection = computerPlay();
-		roundResult = playRound(playerSelection, computerSelection);
-
-		if (roundResult === "W") {
-			playerScore++;
-			console.log(`You win! ${playerSelection} beats ${computerSelection}`);
-		} else if (roundResult === "L") {
-			computerScore++;
-			console.log(`You lose! ${computerSelection} beats ${playerSelection}`);
-		} else {
-			console.log(`You both played ${playerSelection}! It's a tie!`);
-		}
-	}
-
-	return `The score is ${playerScore}-${computerScore} ${gameResult()}`;
+	resetGameIfEnd()
+	const playerSelection = this.textContent
+	const computerSelection = generateComputerSelection()
+	const result = getResult()
+	updateScore()
+	displayResult()
+	displayScore()
+	displayMessage()
 }
 
-console.log(game());
+// console.log(game());
+function play() {}
+
+const resultsDiv = document.querySelector("#results")
+const scores = {
+	'playerScore': 0,
+	'computerScore': 0,
+}
+const scoreDiv = document.querySelector('#score')
+const messageDiv = document.querySelector('#message')
+
+const buttons = document.querySelectorAll("button")
+buttons.forEach((btn) => {
+	btn.addEventListener("click", game)
+})
